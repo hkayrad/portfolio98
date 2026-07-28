@@ -1,10 +1,12 @@
 import { useState } from "react";
 import Window from "./components/Window";
 import { useWindowManager } from "./hooks/useWindowManager";
-import { WINDOWS, type WINDOW_TYPE } from "./lib/enums";
+import { LINKS, WINDOWS, type WINDOW_TYPE } from "./lib/enums";
 import PageLoader from "./PageLoader";
 import defaultCursor from "/cursors/default.cur";
 import pointerCursor from "/cursors/pointer.cur";
+
+var lastIndex = 0;
 
 export default function Desktop() {
   const { openWindows, closeWindow, maximizeWindow, restoreWindow, moveWindow, resizeWindow, focusWindow, openWindow } =
@@ -13,7 +15,7 @@ export default function Desktop() {
   const [isLoading, setIsLoading] = useState(true);
 
   function openWindowFromTopLeft(windowType: WINDOW_TYPE, index: number) {
-    const width = 400;
+    const width = 500;
     const height = 300;
     const offset = index * 28;
     const x = 150 + offset;
@@ -25,6 +27,7 @@ export default function Desktop() {
       maximized: false,
       x,
       y,
+      resizable: windowType !== WINDOWS.GITHUB,
     });
   }
 
@@ -45,6 +48,7 @@ export default function Desktop() {
         })}
 
         {Object.values(WINDOWS).map((windowType, index) => {
+          lastIndex = index;
           return (
             <button
               key={windowType}
@@ -56,6 +60,23 @@ export default function Desktop() {
             >
               <img src={`/desktopIcons/${windowType.toLowerCase()}.ico`} className="h-8 w-8" />
               <p>{windowType.charAt(0) + windowType.slice(1).toLowerCase()}</p>
+            </button>
+          );
+        })}
+
+        {Object.entries(LINKS).map(([linkType, linkUrl], index) => {
+          lastIndex = index + Object.values(WINDOWS).length;
+          return (
+            <button
+              key={linkType}
+              className="absolute w-fit h-fit flex flex-col items-center justify-center gap-1 p-2 border-none"
+              style={{ left: 12, top: 12 + lastIndex * 72, height: 60, background: "none", boxShadow: "none", cursor: `url(${pointerCursor}), auto` }}
+              onDoubleClick={() => {
+                window.open(linkUrl, "_blank");
+              }}
+            >
+              <img src={`/desktopIcons/${linkType.toLowerCase()}.ico`} className="h-8 w-8" />
+              <p>{linkType.charAt(0) + linkType.slice(1).toLowerCase()}</p>
             </button>
           );
         })}

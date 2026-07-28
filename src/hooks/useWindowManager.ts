@@ -8,6 +8,7 @@ type WindowState = {
     x: number;
     y: number;
     zIndex: number;
+    resizable?: boolean;
 };
 
 type WindowInitState = Omit<WindowState, "zIndex">;
